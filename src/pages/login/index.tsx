@@ -15,6 +15,7 @@ import Link from 'next/link'
 import Input from '../../components/Input'
 import { ImageRight } from '../register/style'
 import Router from 'next/router'
+import InputPassword from '../../components/InputPassword';
 
 
 const schema = yup.object({
@@ -62,8 +63,7 @@ export default function Login() {
                         register={{ ...register("name", { required: true }) }}
                     />
 
-                    <Input
-                        type='password'
+                    <InputPassword
                         label='Senha'
                         error={errors.password?.message}
                         register={{ ...register("password", { required: true }) }}

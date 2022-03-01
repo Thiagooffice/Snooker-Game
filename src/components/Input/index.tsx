@@ -5,7 +5,7 @@ interface IInputProps{
     label?: string;
     type?: string;
     error: ReactNode;
-    register: any
+    register?: any
 }
 
 export default function Input({label, type, error, register}: IInputProps) {

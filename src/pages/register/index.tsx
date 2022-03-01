@@ -8,31 +8,54 @@ import * as yup from "yup";
 import { toast } from 'react-toastify'
 import Button from '../../components/ButtomForm/ButtonForm'
 import Input from '../../components/Input';
+import { useState } from 'react'
+import InputPassword from '../../components/InputPassword';
+import Router from 'next/router'
 
+const lowercase = /(?=.*[a-z])/;
+const uppercase = /(?=.*[A-Z])/
+const numeric = /(?=.*[0-9])/
+const specialCharacter = /(?=.*[!@#$%^&*])/
 
 const schema = yup.object({
     name: yup.string().required("O nome é obrigatório"),
-    password: yup.string().min(6, "A senha deve ter pelo menos 6 digitos").required("A senha é obrigatória"),
+    password: yup.string()
+        .required('Senha obrigatório!')
+        .min(8, 'Minimo 8 caracteres obrigatorio')
+        .matches(uppercase, 'É obrigatório letra maiúscula')
+        .matches(lowercase, 'É obrigatório letra minúscula')
+        .matches(numeric, 'É obrigatório um número')
+        .matches(specialCharacter, 'É obrigatório um caractere espcial'),
     email: yup.string().required("O email é obrigatório"),
-    confirmPassword: yup.string().required("A confirmação é obrigatório").oneOf([yup.ref("password")],"As senhas devem ser iguais"),
-}).required();
+    confirmPassword: yup.string()
+        .oneOf([yup.ref('password')], 'A senha deverá ser a mesma')
+        .required('Confirmar Senha Obrigatório')
+});
 
 interface IFormInputs {
     name: string
     password: string
     email: string
-    confirmPassword:string
+    confirmPassword: string
 }
 
 export default function Login() {
+
+    const [showPassword, setShowPassword] = useState(false)
+
+    const handlePassword = () => setShowPassword(!showPassword)
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm<IFormInputs>({
         resolver: yupResolver(schema)
     });
 
     function onSubmit(userData: IFormInputs) {
+        delete userData.confirmPassword
         console.log(userData);
         toast.success("Cadastro efetuado com sucesso!")
+        setTimeout(() => {
+            Router.push('/login')
+        }, 4000)
     }
 
     return (
@@ -55,18 +78,16 @@ export default function Login() {
                         register={{ ...register("email", { required: true }) }}
                     />
 
-                    <Input
-                        type='password'
+                    <InputPassword
                         label='Senha'
                         error={errors.password?.message}
                         register={{ ...register("password", { required: true }) }}
                     />
 
-                    <Input
-                        type='password'
-                        label='Confirmar senha'
-                        error={errors.confirmPassword?.message}
-                        register={{ ...register("confirmPassword", { required: true }) }}
+                    <InputPassword 
+                    error={errors.confirmPassword?.message}
+                    label="Confirmar Senha"
+                    register={{ ...register("confirmPassword", { required: true }) }}
                     />
 
                     <div className='ForgotPassword'>
